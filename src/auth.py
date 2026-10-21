@@ -42,3 +42,5 @@ def login(driver):
         print("Logged in successfully.")
     except Exception as e:
         print(f"Login failed: {e}")
+    # finally:
+    #     print('nice')

@@ -34,6 +34,7 @@ def main():
 
         course_info = get_course_info(driver, course)
         lessons = course_info["lessons"]
+        print(lessons)
         course_title = course_info["title"].replace("?", "").replace(":", "")
         print(f"Course Title: {course_title}")
 

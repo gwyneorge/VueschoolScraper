@@ -54,6 +54,7 @@ def choose_content():
             print("Invalid choice. Please enter a number between 1 and 7.")
 
 def get_course_info(driver, course):
+    # @@ hereee
     course_info = {}
     driver.get(course)
 
@@ -62,7 +63,7 @@ def get_course_info(driver, course):
         if not lessons:
             print("No lessons found.")
         course_info["lessons"] = [lesson.get_attribute("href") for lesson in lessons]
-        course_info["title"] = driver.find_element(By.CSS_SELECTOR, "#header h1[title]").text
+        course_info["title"] = driver.find_element(By.CSS_SELECTOR, "h1").text
     except NoSuchElementException as e:
         print(f"Error retrieving course info: {e}")
         course_info["lessons"] = []
