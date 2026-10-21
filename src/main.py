@@ -2,6 +2,7 @@ from time import sleep
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from decouple import config
+import re
 
 # Import your custom modules
 from src.auth import login
@@ -17,6 +18,12 @@ def main():
 
         service = Service(driver_path)
         chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument("--disable-notifications")
+        prefs = {
+            "download.default_directory": download_path,
+            "profile.default_content_setting_values.notifications": 2,
+        }
+        chrome_options.add_experimental_option("prefs", prefs)
         prefs = {"download.default_directory": download_path}
         chrome_options.add_experimental_option("prefs", prefs)
         driver = webdriver.Chrome(service=service, options=chrome_options)
@@ -35,7 +42,7 @@ def main():
         course_info = get_course_info(driver, course)
         lessons = course_info["lessons"]
         print(lessons)
-        course_title = course_info["title"].replace("?", "").replace(":", "")
+        course_title = re.sub(r'[<>:"/\\|?*]', "", course_info["title"]).strip()
         print(f"Course Title: {course_title}")
 
         if not lessons:
@@ -65,7 +72,7 @@ def main():
             )
 
             if choice == "3" or choice == "5":
-                if repo_url != "Not Applicable":
+                if repo_url not in ("Not Applicable", "Not Found", "Page not loaded"):
                     source_code_urls.append(repo_url)
 
             if lesson_index % 2 == 0:
