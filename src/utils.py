@@ -1,5 +1,7 @@
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from decouple import config
 
 def check_exists_by_css_selector(driver, css_selector):
@@ -54,19 +56,36 @@ def choose_content():
             print("Invalid choice. Please enter a number between 1 and 7.")
 
 def get_course_info(driver, course):
-    # @@ hereee
-    course_info = {}
+    course_info = {"lessons": [], "title": "Unknown Title"}
     driver.get(course)
+    dismiss_popups(driver)
+    wait = WebDriverWait(driver, 20)
 
     try:
-        lessons = driver.find_elements(By.CLASS_NAME, "title")
-        if not lessons:
+        course_info["title"] = wait.until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "h1"))
+        ).text.strip()
+
+        wait.until(lambda d: d.find_elements(By.CSS_SELECTOR, 'a[href^="/lessons/"]'))
+
+        seen = set()
+        for a in driver.find_elements(By.CSS_SELECTOR, 'a[href^="/lessons/"]'):
+            href = a.get_attribute("href")
+            # only real lesson rows (they contain title + duration spans)
+            if href and href not in seen and a.find_elements(By.CSS_SELECTOR, "span"):
+                seen.add(href)
+                course_info["lessons"].append(href)
+
+        if not course_info["lessons"]:
             print("No lessons found.")
-        course_info["lessons"] = [lesson.get_attribute("href") for lesson in lessons]
-        course_info["title"] = driver.find_element(By.CSS_SELECTOR, "h1").text
-    except NoSuchElementException as e:
+    except Exception as e:
         print(f"Error retrieving course info: {e}")
-        course_info["lessons"] = []
-        course_info["title"] = "Unknown Title"
 
     return course_info
+
+def dismiss_popups(driver):
+    driver.execute_script("""
+        document.querySelectorAll(
+            '#onesignal-slidedown-container, #onesignal-slidedown-dialog, .onesignal-slidedown-container'
+        ).forEach(e => e.remove());
+    """)
