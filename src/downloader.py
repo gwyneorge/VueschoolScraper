@@ -23,8 +23,8 @@ def dismiss_popups(driver):
     """)
 
 
-def http_download(driver, url, base_name, default_ext):
-    download_path = config("DOWNLOAD_PATH")
+def http_download(driver, url, base_name, default_ext,download_path):
+    # download_path = config("DOWNLOAD_PATH")
 
     session = requests.Session()
     for c in driver.get_cookies():
@@ -62,7 +62,7 @@ def http_download(driver, url, base_name, default_ext):
         os.replace(path + ".part", path)
     return path
 @do_in_new_window
-def download_lesson_content(driver, lesson_url, lesson_index, course_title, choice):
+def download_lesson_content(driver, lesson_url, lesson_index, course_title, choice, download_path):
     wait = WebDriverWait(driver, 20)
     wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "h1")))
     dismiss_popups(driver)
@@ -75,11 +75,11 @@ def download_lesson_content(driver, lesson_url, lesson_index, course_title, choi
 
     if choice in ["1", "3", "6"]:
         print(f"Downloading lesson video for {lesson_title}...")
-        download_lesson(driver, base + " - HD")
+        download_lesson(driver, base + " - HD", download_path)
 
     if choice in ["2", "3", "6"]:
         print(f"Downloading transcript for {lesson_title}...")
-        download_transcript(driver, base + " - HD")
+        download_transcript(driver, base + " - HD", download_path)
 
     if choice in ["4", "6"]:
         print(f"Getting source code link for {lesson_title}...")
@@ -87,28 +87,28 @@ def download_lesson_content(driver, lesson_url, lesson_index, course_title, choi
 
     if choice in ["5", "6"]:
         print(f"Downloading description for {lesson_title}...")
-        download_description(driver, base + " - Description")
+        download_description(driver, base + " - Description", download_path)
 
     return repo_elem_url
 
 
-def download_lesson(driver, base_name):
+def download_lesson(driver, base_name, download_path):
     try:
         link = driver.find_element(By.CSS_SELECTOR, 'a[href*="/download/"][href$="/hd"]')
-        path = http_download(driver, link.get_attribute("href"), base_name, ".mp4")
+        path = http_download(driver, link.get_attribute("href"), base_name, ".mp4", download_path)
         print(f"Lesson video saved: {path}")
     except Exception as e:
         print(f"Failed to download the lesson: {e}")
 
 
-def download_transcript(driver, base_name):
+def download_transcript(driver, base_name, download_path):
     css = 'a[href$="/download-transcript"]'
     if not check_exists_by_css_selector(driver, css):
         print("No transcript link found.")
         return False
     try:
         href = driver.find_element(By.CSS_SELECTOR, css).get_attribute("href")
-        path = http_download(driver, href, base_name, ".vtt")
+        path = http_download(driver, href, base_name, ".vtt", download_path)
         print(f"Transcript saved: {path}")
         return True
     except Exception as e:
@@ -121,13 +121,13 @@ def get_source_code_link(driver):
     return els[0].get_attribute("href") if els else "Not Found"
 
 
-def download_description(driver, base_name):
+def download_description(driver, base_name, download_path):
     css = "div.prose"
     if not check_exists_by_css_selector(driver, css):
         print("No description found.")
         return
     html = driver.find_element(By.CSS_SELECTOR, css).get_attribute("innerHTML")
-    path = os.path.join(config("DOWNLOAD_PATH"), safe_name(base_name) + ".md")
+    path = os.path.join(download_path, safe_name(base_name) + ".md")
     with open(path, "w", encoding="utf-8") as f:
         f.write(html2text(html))
     print(f"Description saved: {path}")

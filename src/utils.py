@@ -23,17 +23,20 @@ def save(filename, repos_urls, lesson_from, lesson_to):
 def handle_params(lessons_numbers):
     params = {"from": 1, "to": lessons_numbers}
     print(f"Done! Found {lessons_numbers} lessons.")
-    decision = input("Do you want to select a range of lessons? [y, n] --> ")
+    # decision = input("Do you want to select a range of lessons? [y, n] --> ")
+    decision = 'yes'
 
     if decision.lower() in ["y", "yes"]:
-        range_from = input(f"Download <From> lesson No.?  [1-{lessons_numbers}], 1 is the default  --> ")
-        params["from"] = (
-            int(range_from) if range_from.isnumeric() and 0 < int(range_from) <= lessons_numbers else 1
-        )
-        range_to = input(f"Download <To> lesson No.?  [1-{lessons_numbers}], {lessons_numbers} is the default  --> ")
-        params["to"] = (
-            int(range_to) if range_to.isnumeric() and 0 < int(range_to) <= lessons_numbers else lessons_numbers
-        )
+        # range_from = input(f"Download <From> lesson No.?  [1-{lessons_numbers}], 1 is the default  --> ")
+        # params["from"] = (
+        #     int(range_from) if range_from.isnumeric() and 0 < int(range_from) <= lessons_numbers else 1
+        # )
+        # range_to = input(f"Download <To> lesson No.?  [1-{lessons_numbers}], {lessons_numbers} is the default  --> ")
+        # params["to"] = (
+        #     int(range_to) if range_to.isnumeric() and 0 < int(range_to) <= lessons_numbers else lessons_numbers
+        # )
+        params["from"] = 1
+        params["to"] = lessons_numbers
 
     return params
 

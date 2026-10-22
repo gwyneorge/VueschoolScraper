@@ -9,12 +9,14 @@ from src.auth import login
 from src.utils import handle_params, save, choose_content, get_course_info
 from src.downloader import download_lesson_content
 
-def main():
+
+def main(selected_course):
+    driver = None
     try:
         print("Initiating a driver...")
 
         driver_path = config("CHROMEDRIVER")
-        download_path = config("DOWNLOAD_PATH")
+        download_path = config("DOWNLOAD_PATH") + selected_course
 
         service = Service(driver_path)
         chrome_options = webdriver.ChromeOptions()
@@ -23,8 +25,6 @@ def main():
             "download.default_directory": download_path,
             "profile.default_content_setting_values.notifications": 2,
         }
-        chrome_options.add_experimental_option("prefs", prefs)
-        prefs = {"download.default_directory": download_path}
         chrome_options.add_experimental_option("prefs", prefs)
         driver = webdriver.Chrome(service=service, options=chrome_options)
         print("Done!")
@@ -36,7 +36,7 @@ def main():
 
         # Get the lessons
         print("Getting the lessons...")
-        course = config("COURSE_URL")
+        course = config("COURSE_URL") + selected_course
         print(f"Course URL: {course}")
 
         course_info = get_course_info(driver, course)
@@ -54,7 +54,8 @@ def main():
         lessons = lessons[(download_range["from"] - 1): download_range["to"]]
 
         # Ask the user which content to download
-        choice = choose_content()
+        # choice = choose_content()
+        choice = "6"
 
         if choice == "7":
             print("Exiting the program.")
@@ -68,7 +69,7 @@ def main():
             print(f"Downloading lesson No. {lesson_index}...")
 
             repo_url = download_lesson_content(
-                driver, lesson_url, lesson_index, course_title, choice
+                driver, lesson_url, lesson_index, course_title, choice, download_path
             )
 
             if choice == "3" or choice == "5":
@@ -85,11 +86,18 @@ def main():
         if choice == "3" or choice == "5":
             save("repo", source_code_urls, download_range["from"], download_range["to"])
 
-        print("Done! Check Downloads in browser driver.")
-        input("Enter key to close:) -> ")
+        print(f"Done! '{selected_course}' saved to {download_path}")
 
     except Exception as e:
         print(f"An error occurred: {e}")
 
-if __name__ == "__main__":
-    main()
+    finally:
+        if driver:
+            driver.quit()
+
+
+COURSES = [
+]
+
+for c in COURSES:
+    main(c)
