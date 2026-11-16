@@ -89,4 +89,3 @@ VueschoolScraper/
 - Ensure that ChromeDriver is installed and that its path is correctly specified in the `.env` file.
 - The script opens each lesson in a new browser tab, downloads the requested content, and then closes the tab.
 - You can adjust the wait time between downloading lessons by setting the `WAIT_TIME` variable in your `.env` file.
-- A premium subscription is required for the download feature 
