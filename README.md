@@ -10,7 +10,7 @@
    EMAIL=[your email]
    PASSWORD=[your password]
    COURSE_URL=[the course URL you want to download]
-   DOWNLOAD_PATH=[the path where you want to save downloads]
+   DOWNLOAD_PATH=[the path where you want to save the downloads]
    WAIT_TIME=[optional: the wait time between downloads, default is 8 seconds]
    ```
 
@@ -92,5 +92,6 @@ VueschoolScraper/
 - A premium subscription is required for the download feature 
 
 # Recursive download.
-- For this feature checkout on the branch with the same name
+- For this feature checkout on the branch with the same name.
 - In the array on Main.py add only the course name not the full url.
+- Its hard coded to auto select `5. All content.`
