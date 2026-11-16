@@ -92,5 +92,5 @@ VueschoolScraper/
 - A premium subscription is required for the download feature 
 
 # Recursive download.
-- For this feature for on the branch with the same name
+- For this feature checkout on the branch with the same name
 - In the array on Main.py add only the course name not the full url.
